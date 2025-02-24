@@ -1,0 +1,11 @@
+# For advanced console output and formatting:
+rich>=12.0.0
+
+# For graph-based computations and potential visualization of factor graphs:
+networkx>=2.6.3
+
+# For advanced probabilistic modeling and potential deep learning extensions:
+torch>=1.10.0
+
+# For efficient numerical operations (if needed for belief propagation enhancements):
+numpy>=1.21.0
