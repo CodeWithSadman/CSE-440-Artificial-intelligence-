@@ -9,3 +9,8 @@ torch>=1.10.0
 
 # For efficient numerical operations (if needed for belief propagation enhancements):
 numpy>=1.21.0
+#For Game GUI we need to install dependencies
+tkinter
+
+#for game logic
+pgympy model
