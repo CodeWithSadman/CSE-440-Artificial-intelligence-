@@ -80,3 +80,17 @@ def choose_starting_location(location_choice):
     # Hide location choice buttons after selection
     location_buttons_frame.pack_forget()
     show_location_choices(game_state["Location"])
+    
+# Function to show available choices based on the location
+def show_location_choices(location):
+    location_choices = []
+    if location == "Lalbagh Fort":
+        location_choices = ["Explore the Hidden Passage", "Leave the Fort", "Rest and Heal", "Random Event"]
+    elif location == "Sadarghat":
+        location_choices = ["Approach the Merchant", "Leave the Area", "Random Event"]
+    elif location == "National Museum":
+        location_choices = ["Investigate the Museum", "Leave the Museum"]
+    elif location == "Sundarbans":
+        location_choices = ["Explore the Forest", "Leave the Forest", "Fight Wild Animals", "Random Event"]
+    elif location == "Ahsan Manzil":
+        location_choices = ["Explore the Mansion", "Leave the Mansion", "Meet the Local NPC"]
