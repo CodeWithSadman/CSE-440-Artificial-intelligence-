@@ -61,3 +61,22 @@ story_label = tk.Label(root, text="Welcome to the Adventure Quest!", wraplength=
 story_label.pack()
 #Shehan part ends
 #Niloy push from here
+#Niloy Part Starts
+
+# Update game state labels
+def update_labels():
+    health_label.config(text="Health: " + str(game_state["Health"]))
+    reputation_label.config(text="Reputation: " + str(game_state["Reputation"]))
+    quest_label.config(text="Quest Progress: " + str(game_state["Quest Progress"]))
+    location_label.config(text="Location: " + game_state["Location"])
+    inventory_label.config(text="Inventory: " + ", ".join(game_state["Inventory"]))
+
+# Function to allow the player to choose their starting location
+def choose_starting_location(location_choice):
+    game_state["Location"] = location_choice
+    update_labels()
+    story_label.config(text=f"You have chosen to start at {location_choice}. Your journey begins!")
+
+    # Hide location choice buttons after selection
+    location_buttons_frame.pack_forget()
+    show_location_choices(game_state["Location"])
