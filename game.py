@@ -100,3 +100,61 @@ for choice in location_choices:
         action_button.pack()
 
 #Niloy Part Ends
+
+#Sadmans Part Starts
+
+# Function to update the game state using the factor graph
+def update_game_state(action):
+if action == "Explore the Hidden Passage":
+game_state["Health"] -= 1 # Health decreases when exploring
+update_labels()
+story_label.config(text=f"You explore the Hidden Passage, but lose some health.")
+
+elif action == "Rest and Heal":
+game_state["Health"] = min(game_state["Health"] + 3, 10) # Max health is 10
+update_labels()
+story_label.config(text="You rest and heal. Your health is restored.")
+
+elif action == "Leave the Fort" or action == "Leave the Area" or action == "Leave the Museum" or action == "Leave the Forest" or action == "Leave the Mansion":
+story_label.config(text=f"You leave the {game_state['Location']}.")
+# After leaving the current location, give player the option to choose a new location
+choose_new_location()
+
+elif action == "Random Event":
+random_event()
+
+elif action == "Fight Wild Animals" or action == "Fight Bandits":
+combat_outcome()
+
+# Function to simulate combat with enemies
+def combat_outcome():
+decision = messagebox.askquestion("Combat", "Do you want to fight or negotiate?")
+
+if decision == "fight":
+combat_factor = fg.get_factors()[3] # Get combat factor
+combat_ability_values = combat_factor.values # Extract combat ability probabilities
+
+# Sample combat ability based on the factor graph
+combat_ability = np.random.choice([0, 1, 2], p=combat_ability_values) # Low, Medium, High combat ability
+print(f"Your combat ability is: {['Low', 'Medium', 'High'][combat_ability]}")
+
+if combat_ability == 2:
+story_label.config(text="You easily defeat the enemies and gain reputation.")
+game_state["Reputation"] += 2
+elif combat_ability == 1:
+story_label.config(text="You defeat the enemies but take some damage.")
+game_state["Health"] -= 2
+else:
+story_label.config(text="You are overwhelmed and lose the fight.")
+game_state["Health"] = 0 # Game Over
+update_labels()
+messagebox.showinfo("Game Over", "You are overwhelmed by the enemies. Game over!")
+root.quit()
+update_labels()
+
+elif decision == "negotiate":
+story_label.config(text="You manage to talk your way out of the fight, gaining some reputation.")
+game_state["Reputation"] += 1
+update_labels()
+
+#Sadman Part Ends
