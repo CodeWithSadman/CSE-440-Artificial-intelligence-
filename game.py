@@ -158,3 +158,58 @@ game_state["Reputation"] += 1
 update_labels()
 
 #Sadman Part Ends
+
+
+#Tawhid Part Starts
+
+# Function to simulate a random event
+def random_event():
+    event = random.choice(["find_item", "gain_health", "gain_reputation", "find_gold", "fight_bandits"])
+    
+    if event == "find_item":
+        game_state["Inventory"].append("Mysterious Artifact")
+        story_label.config(text="You found a mysterious artifact!")
+    elif event == "gain_health":
+        game_state["Health"] = min(game_state["Health"] + 3, 10)
+        story_label.config(text="You found a healing herb that restored your health.")
+    elif event == "gain_reputation":
+        game_state["Reputation"] += 1
+        story_label.config(text="You helped a local, and your reputation increased.")
+    elif event == "find_gold":
+        game_state["Inventory"].append("Gold Coins")
+        story_label.config(text="You found a hidden stash of gold coins!")
+    elif event == "fight_bandits":
+        story_label.config(text="A group of bandits has appeared! Prepare for battle!")
+        combat_outcome()
+
+    update_labels()
+
+# Function to allow the player to choose their next location
+def choose_new_location():
+    # Prompt player to choose a new location
+    location_buttons_frame.pack_forget()
+    choose_starting_location()
+
+# Initial location choice
+location_buttons_frame = tk.Frame(root)
+location_buttons_frame.pack()
+
+lalbagh_button = tk.Button(location_buttons_frame, text="Start at Lalbagh Fort", command=lambda: choose_starting_location("Lalbagh Fort"))
+lalbagh_button.pack()
+
+sadarghat_button = tk.Button(location_buttons_frame, text="Start at Sadarghat", command=lambda: choose_starting_location("Sadarghat"))
+sadarghat_button.pack()
+
+museum_button = tk.Button(location_buttons_frame, text="Start at National Museum", command=lambda: choose_starting_location("National Museum"))
+museum_button.pack()
+
+sundarbans_button = tk.Button(location_buttons_frame, text="Start at Sundarbans", command=lambda: choose_starting_location("Sundarbans"))
+sundarbans_button.pack()
+
+ahsan_manzil_button = tk.Button(location_buttons_frame, text="Start at Ahsan Manzil", command=lambda: choose_starting_location("Ahsan Manzil"))
+ahsan_manzil_button.pack()
+
+# Run the Tkinter main loop
+root.mainloop()
+
+# Tawhid Part Ends
