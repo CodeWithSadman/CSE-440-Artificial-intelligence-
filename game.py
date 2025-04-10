@@ -60,7 +60,7 @@ inventory_label.pack()
 story_label = tk.Label(root, text="Welcome to the Adventure Quest!", wraplength=300)
 story_label.pack()
 #Shehan part ends
-#Niloy push from here
+
 #Niloy Part Starts
 
 # Update game state labels
