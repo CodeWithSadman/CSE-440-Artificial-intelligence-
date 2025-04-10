@@ -94,3 +94,9 @@ def show_location_choices(location):
         location_choices = ["Explore the Forest", "Leave the Forest", "Fight Wild Animals", "Random Event"]
     elif location == "Ahsan Manzil":
         location_choices = ["Explore the Mansion", "Leave the Mansion", "Meet the Local NPC"]
+
+for choice in location_choices:
+        action_button = tk.Button(root, text=choice, command=lambda c=choice: update_game_state(c))
+        action_button.pack()
+
+#Niloy Part Ends
