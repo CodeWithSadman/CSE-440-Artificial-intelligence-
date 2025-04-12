@@ -217,3 +217,81 @@ def quest_complete_end_game():
 
 
 #Niloy Part Ends--------------------------------------------------------------------
+
+#Sadmaan Part Starts---------------------------------------------------------------------
+
+# Function to simulate the Merchant encounter
+def approach_merchant():
+    story_label.config(text="You approach the merchant. He offers a rare item for 5 gold coins.")
+    action_buttons_frame.pack_forget()
+    merchant_frame = tk.Frame(root)
+    merchant_frame.pack()
+
+    buy_button = tk.Button(merchant_frame, text="Buy Item", command=lambda: buy_item(merchant_frame))
+    buy_button.pack()
+
+    leave_button = tk.Button(merchant_frame, text="Leave", command=lambda: leave_merchant(merchant_frame))
+    leave_button.pack()
+
+
+
+# Function for handling the Buy Item action
+def buy_item(merchant_frame):
+    game_state["Inventory"].append("Rare Item")
+    game_state["Reputation"] += 1
+    story_label.config(text="You bought the rare item. Your reputation increased.")
+    update_labels()
+    merchant_frame.pack_forget()
+    show_location_choices(game_state["Location"])
+
+# Function for handling the Leave action after meeting the merchant
+def leave_merchant(merchant_frame):
+    story_label.config(text="You decide to leave the merchant.")
+    merchant_frame.pack_forget()
+    show_location_choices(game_state["Location"])
+
+# Function to simulate combat
+def combat_outcome():
+    # Now we will replace the Yes/No dialogue with buttons for Fight and Negotiate
+    action_buttons_frame.pack_forget()  # Hide the action buttons while deciding on the fight
+    combat_frame = tk.Frame(root)
+    combat_frame.pack()
+
+    fight_button = tk.Button(combat_frame, text="Fight", command=lambda: handle_combat("fight", combat_frame))
+    fight_button.pack()
+
+    negotiate_button = tk.Button(combat_frame, text="Negotiate", command=lambda: handle_combat("negotiate", combat_frame))
+    negotiate_button.pack()
+
+
+
+
+
+# Function to handle combat decisions
+def handle_combat(decision, combat_frame):
+    combat_frame.pack_forget()  # Hide the combat options frame
+
+    if decision == "fight":
+        # Random combat outcome based on combat ability
+        combat_ability = random.choice([0, 1, 2])  # Low, Medium, High combat ability
+        if combat_ability == 2:
+            story_label.config(text="You easily defeat the enemies and gain reputation.")
+            game_state["Reputation"] += 2
+        elif combat_ability == 1:
+            story_label.config(text="You defeat the enemies but take some damage.")
+            game_state["Health"] -= 2
+        else:
+            story_label.config(text="You are overwhelmed and lose the fight.")
+            game_state["Health"] = 0  # Game Over
+            update_labels()
+            messagebox.showinfo("Game Over", "You are overwhelmed by the enemies. Game over!")
+            root.quit()
+
+    elif decision == "negotiate":
+        story_label.config(text="You manage to talk your way out of the fight, gaining some reputation.")
+        game_state["Reputation"] += 1
+
+    update_labels()
+
+
+#Sadman Part Ends-----------------------------------------------------------------------
