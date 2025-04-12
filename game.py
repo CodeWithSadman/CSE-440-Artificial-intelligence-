@@ -134,3 +134,86 @@ def show_location_choices(location):
 
 #Shehan Part Ends---------------------------------------------------------------------------
 #push form here now
+
+#Niloy Part Starts--------------------------------------------------------------------------
+
+# Function to update the game state
+def update_game_state(action):
+    if game_state["Health"] <= 0:
+        game_over()
+
+    if action == "Explore the Hidden Passage":
+        game_state["Health"] -= 1
+        update_labels()
+        story_label.config(text="You explore the Hidden Passage but lose some health.")
+    
+    elif action == "Rest and Heal":
+        game_state["Health"] = min(game_state["Health"] + 3, 10)
+        update_labels()
+        story_label.config(text="You rest and heal. Your health is restored.")
+
+    elif action in ["Leave the Fort", "Leave the Area", "Leave the Museum", "Leave the Forest", "Leave the Mansion"]:
+        story_label.config(text=f"You leave the {game_state['Location']}.")
+        choose_new_location()
+
+    elif action == "Random Event":
+        random_event()
+
+    elif action == "Fight Wild Animals" or action == "Fight Bandits":
+        combat_outcome()
+
+    elif action == "Approach the Merchant":
+        approach_merchant()
+
+    elif action == "Investigate the Museum":
+        investigate_museum()  # Call the investigate_museum function when the action is "Investigate the Museum"
+
+
+ 
+ # Function for the "Investigate the Museum" action
+def investigate_museum():
+    # Story about investigating the museum and finding a hidden passage to the cave
+    story_label.config(text="You investigate the museum and discover a hidden passage that leads you to a cave.")
+
+    action_buttons_frame.pack_forget()  # Hide previous action buttons
+
+    # Create the frame for new interaction inside the cave
+    cave_frame = tk.Frame(root)
+    cave_frame.pack()
+
+    # Button to explore the cave
+    explore_cave_button = tk.Button(cave_frame, text="Explore the Cave", command=lambda: explore_cave(cave_frame))
+    explore_cave_button.pack()
+
+# Function to explore the cave and find the artifact
+def explore_cave(cave_frame):
+    # Add the Artifact to the inventory
+    game_state["Inventory"].append("Artifact")
+    game_state["Quest Progress"] = 2  # Mark the quest as completed
+    
+    # Update the labels and show a completion message
+    update_labels()
+    story_label.config(text="You find a hidden Artifact in the cave. The quest is complete!")
+
+    # Hide the cave frame and show location choices again
+    cave_frame.pack_forget()
+    check_quest_completion()  # This function checks if the quest is completed
+    show_location_choices(game_state["Location"])
+
+# Function to check if the quest is completed
+def check_quest_completion():
+    # If the player has the required items in inventory, mark the quest as complete
+    if "Artifact" in game_state["Inventory"]:
+        game_state["Quest Progress"] = 2  # Quest complete
+        story_label.config(text="Congratulations! You have completed the quest!")
+        update_labels()
+        # Trigger the quest completion end game logic
+        quest_complete_end_game()
+
+# Function to handle quest completion and end the game
+def quest_complete_end_game():
+    messagebox.showinfo("Quest Complete", "You have completed the quest and found the hidden treasure!")
+    root.quit()  # End the game after completion
+
+
+#Niloy Part Ends--------------------------------------------------------------------
