@@ -1,4 +1,4 @@
-#Shehan part starts
+#Shehan Starts-------------------------------------------------
 
 import tkinter as tk
 from tkinter import messagebox
@@ -10,29 +10,52 @@ import numpy as np
 # Initialize Factor Graph
 fg = FactorGraph()
 
-# Defining the variables: Health, Reputation, Quest Progress, and Location
-fg.add_nodes_from(['Health', 'Reputation', 'Quest Progress', 'Location', 'Combat Ability'])
+# Defining the variables: Health, Reputation, Combat Ability, Quest Progress
+fg.add_nodes_from(['Health', 'Reputation', 'Combat Ability', 'Quest Progress', 'FightOutcome', 'NegotiationOutcome'])
 
-# Defining the probabilistic relationships between these variables
-health_factor = DiscreteFactor(['Health'], [3], [0.2, 0.5, 0.3])  # Probabilities for Low, Medium, High health
-reputation_factor = DiscreteFactor(['Reputation'], [3], [0.5, 0.3, 0.2])  # Probabilities for Low, Neutral, High
-quest_factor = DiscreteFactor(['Quest Progress'], [3], [0.6, 0.3, 0.1])  # Probabilities for quest stages
+# Define the probabilities for each variable
+health_factor = DiscreteFactor(['Health'], [3], [0.2, 0.5, 0.3])  # Low, Medium, High health
+reputation_factor = DiscreteFactor(['Reputation'], [3], [0.5, 0.3, 0.2])  # Low, Neutral, High reputation
 combat_factor = DiscreteFactor(['Combat Ability'], [3], [0.3, 0.5, 0.2])  # Low, Medium, High combat ability
+quest_factor = DiscreteFactor(['Quest Progress'], [3], [0.6, 0.3, 0.1])  # Quest stages
 
-# Add factors to the graph
-fg.add_factors(health_factor, reputation_factor, quest_factor, combat_factor)
+# Fight and Negotiation outcomes based on Combat Ability and Reputation
+fight_prob_table = [
+    [0.8, 0.2],  # CombatAbility = 0 (low)
+    [0.5, 0.5],  # CombatAbility = 1 (medium)
+    [0.1, 0.9]   # CombatAbility = 2 (high)
+]
+
+nego_prob_table = [
+    [0.7, 0.3],  # Reputation = 0 (low)
+    [0.4, 0.6],  # Reputation = 1 (medium)
+    [0.1, 0.9]   # Reputation = 2 (high)
+]
+
+# Create factors for fight and negotiation outcomes
+fight_factor = DiscreteFactor(['Combat Ability', 'FightOutcome'], [3, 2], sum(fight_prob_table, []))
+nego_factor = DiscreteFactor(['Reputation', 'NegotiationOutcome'], [3, 2], sum(nego_prob_table, []))
+
+fg.add_factors(health_factor, reputation_factor, combat_factor, quest_factor, fight_factor, nego_factor)
 
 # Define dependencies between the variables
-fg.add_edge('Health', 'Reputation')  # Health influences Reputation
-fg.add_edge('Reputation', 'Quest Progress')  # Reputation influences Quest Progress
-fg.add_edge('Health', 'Combat Ability')  # Health influences Combat Ability
+fg.add_edges_from([
+    ('Health', health_factor),
+    ('Reputation', reputation_factor),
+    ('Combat Ability', combat_factor),
+    ('Quest Progress', quest_factor),
+    ('Combat Ability', fight_factor),
+    ('FightOutcome', fight_factor),
+    ('Reputation', nego_factor),
+    ('NegotiationOutcome', nego_factor),
+])
 
-# Initialize the game state
+# Game state initialization
 game_state = {
-    "Health": 1,  # Default: Medium health
+    "Health": 5,  # Default: Medium health
     "Reputation": 1,  # Default: Neutral reputation
     "Quest Progress": 0,  # Default: Not started
-    "Location": "Not Selected",  # Starting location
+    "Location": None,  # Starting location is None
     "Inventory": ["Map", "Potion"],  # Starting inventory
     "Combat Ability": 1,  # Default: Medium combat ability
 }
@@ -51,7 +74,7 @@ reputation_label.pack()
 quest_label = tk.Label(root, text="Quest Progress: " + str(game_state["Quest Progress"]))
 quest_label.pack()
 
-location_label = tk.Label(root, text="Location: " + game_state["Location"])
+location_label = tk.Label(root, text="Location: " + (game_state["Location"] if game_state["Location"] else "Not Selected"))
 location_label.pack()
 
 inventory_label = tk.Label(root, text="Inventory: " + ", ".join(game_state["Inventory"]))
@@ -59,9 +82,9 @@ inventory_label.pack()
 
 story_label = tk.Label(root, text="Welcome to the Adventure Quest!", wraplength=300)
 story_label.pack()
-#Shehan part ends
 
-#Niloy Part Starts
+# Initialize action_buttons_frame to hold the action buttons (initially empty)
+action_buttons_frame = tk.Frame(root)
 
 # Update game state labels
 def update_labels():
@@ -80,136 +103,6 @@ def choose_starting_location(location_choice):
     # Hide location choice buttons after selection
     location_buttons_frame.pack_forget()
     show_location_choices(game_state["Location"])
-    
-# Function to show available choices based on the location
-def show_location_choices(location):
-    location_choices = []
-    if location == "Lalbagh Fort":
-        location_choices = ["Explore the Hidden Passage", "Leave the Fort", "Rest and Heal", "Random Event"]
-    elif location == "Sadarghat":
-        location_choices = ["Approach the Merchant", "Leave the Area", "Random Event"]
-    elif location == "National Museum":
-        location_choices = ["Investigate the Museum", "Leave the Museum"]
-    elif location == "Sundarbans":
-        location_choices = ["Explore the Forest", "Leave the Forest", "Fight Wild Animals", "Random Event"]
-    elif location == "Ahsan Manzil":
-        location_choices = ["Explore the Mansion", "Leave the Mansion", "Meet the Local NPC"]
 
-for choice in location_choices:
-        action_button = tk.Button(root, text=choice, command=lambda c=choice: update_game_state(c))
-        action_button.pack()
-
-#Niloy Part Ends
-
-#Sadmans Part Starts
-
-# Function to update the game state using the factor graph
-def update_game_state(action):
-if action == "Explore the Hidden Passage":
-game_state["Health"] -= 1 # Health decreases when exploring
-update_labels()
-story_label.config(text=f"You explore the Hidden Passage, but lose some health.")
-
-elif action == "Rest and Heal":
-game_state["Health"] = min(game_state["Health"] + 3, 10) # Max health is 10
-update_labels()
-story_label.config(text="You rest and heal. Your health is restored.")
-
-elif action == "Leave the Fort" or action == "Leave the Area" or action == "Leave the Museum" or action == "Leave the Forest" or action == "Leave the Mansion":
-story_label.config(text=f"You leave the {game_state['Location']}.")
-# After leaving the current location, give player the option to choose a new location
-choose_new_location()
-
-elif action == "Random Event":
-random_event()
-
-elif action == "Fight Wild Animals" or action == "Fight Bandits":
-combat_outcome()
-
-# Function to simulate combat with enemies
-def combat_outcome():
-decision = messagebox.askquestion("Combat", "Do you want to fight or negotiate?")
-
-if decision == "fight":
-combat_factor = fg.get_factors()[3] # Get combat factor
-combat_ability_values = combat_factor.values # Extract combat ability probabilities
-
-# Sample combat ability based on the factor graph
-combat_ability = np.random.choice([0, 1, 2], p=combat_ability_values) # Low, Medium, High combat ability
-print(f"Your combat ability is: {['Low', 'Medium', 'High'][combat_ability]}")
-
-if combat_ability == 2:
-story_label.config(text="You easily defeat the enemies and gain reputation.")
-game_state["Reputation"] += 2
-elif combat_ability == 1:
-story_label.config(text="You defeat the enemies but take some damage.")
-game_state["Health"] -= 2
-else:
-story_label.config(text="You are overwhelmed and lose the fight.")
-game_state["Health"] = 0 # Game Over
-update_labels()
-messagebox.showinfo("Game Over", "You are overwhelmed by the enemies. Game over!")
-root.quit()
-update_labels()
-
-elif decision == "negotiate":
-story_label.config(text="You manage to talk your way out of the fight, gaining some reputation.")
-game_state["Reputation"] += 1
-update_labels()
-
-#Sadman Part Ends
-
-
-#Tawhid Part Starts
-
-# Function to simulate a random event
-def random_event():
-    event = random.choice(["find_item", "gain_health", "gain_reputation", "find_gold", "fight_bandits"])
-    
-    if event == "find_item":
-        game_state["Inventory"].append("Mysterious Artifact")
-        story_label.config(text="You found a mysterious artifact!")
-    elif event == "gain_health":
-        game_state["Health"] = min(game_state["Health"] + 3, 10)
-        story_label.config(text="You found a healing herb that restored your health.")
-    elif event == "gain_reputation":
-        game_state["Reputation"] += 1
-        story_label.config(text="You helped a local, and your reputation increased.")
-    elif event == "find_gold":
-        game_state["Inventory"].append("Gold Coins")
-        story_label.config(text="You found a hidden stash of gold coins!")
-    elif event == "fight_bandits":
-        story_label.config(text="A group of bandits has appeared! Prepare for battle!")
-        combat_outcome()
-
-    update_labels()
-
-# Function to allow the player to choose their next location
-def choose_new_location():
-    # Prompt player to choose a new location
-    location_buttons_frame.pack_forget()
-    choose_starting_location()
-
-# Initial location choice
-location_buttons_frame = tk.Frame(root)
-location_buttons_frame.pack()
-
-lalbagh_button = tk.Button(location_buttons_frame, text="Start at Lalbagh Fort", command=lambda: choose_starting_location("Lalbagh Fort"))
-lalbagh_button.pack()
-
-sadarghat_button = tk.Button(location_buttons_frame, text="Start at Sadarghat", command=lambda: choose_starting_location("Sadarghat"))
-sadarghat_button.pack()
-
-museum_button = tk.Button(location_buttons_frame, text="Start at National Museum", command=lambda: choose_starting_location("National Museum"))
-museum_button.pack()
-
-sundarbans_button = tk.Button(location_buttons_frame, text="Start at Sundarbans", command=lambda: choose_starting_location("Sundarbans"))
-sundarbans_button.pack()
-
-ahsan_manzil_button = tk.Button(location_buttons_frame, text="Start at Ahsan Manzil", command=lambda: choose_starting_location("Ahsan Manzil"))
-ahsan_manzil_button.pack()
-
-# Run the Tkinter main loop
-root.mainloop()
-
-# Tawhid Part Ends
+#Shehan Part ends-----------------------------------------------------------------------------
+#Push from here guys
