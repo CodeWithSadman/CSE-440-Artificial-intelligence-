@@ -106,3 +106,77 @@ def choose_starting_location(location_choice):
 
 #Shehan Part ends-----------------------------------------------------------------------------
 #Push from here guys
+#Niloy Starts---------------------------------------------------------------------------------
+
+# Function to show available choices based on the location
+def show_location_choices(location):
+    location_choices = []
+    if location == "Lalbagh Fort":
+        location_choices = ["Explore the Hidden Passage", "Leave the Fort", "Rest and Heal", "Random Event"]
+    elif location == "Sadarghat":
+        location_choices = ["Approach the Merchant", "Leave the Area", "Random Event"]
+    elif location == "National Museum":
+        location_choices = ["Investigate the Museum", "Leave the Museum"]
+    elif location == "Sundarbans":
+        location_choices = ["Explore the Forest", "Leave the Forest", "Fight Wild Animals", "Random Event"]
+    elif location == "Ahsan Manzil":
+        location_choices = ["Explore the Mansion", "Leave the Mansion", "Meet the Local NPC"]
+
+
+
+
+
+    # Clear previous buttons before creating new ones
+    for widget in action_buttons_frame.winfo_children():
+        widget.destroy()
+
+    # Create new action buttons
+    for choice in location_choices:
+        action_button = tk.Button(action_buttons_frame, text=choice, command=lambda c=choice: update_game_state(c))
+        action_button.pack()
+
+    # Pack the action_buttons_frame to show it
+    action_buttons_frame.pack()
+
+# Function to update the game state
+def update_game_state(action):
+    if game_state["Health"] <= 0:
+        game_over()
+
+    if action == "Explore the Hidden Passage":
+        game_state["Health"] -= 1
+        update_labels()
+        story_label.config(text="You explore the Hidden Passage but lose some health.")
+    
+    elif action == "Rest and Heal":
+        game_state["Health"] = min(game_state["Health"] + 3, 10)
+        update_labels()
+        story_label.config(text="You rest and heal. Your health is restored.")
+
+    elif action in ["Leave the Fort", "Leave the Area", "Leave the Museum", "Leave the Forest", "Leave the Mansion"]:
+        story_label.config(text=f"You leave the {game_state['Location']}.")
+        choose_new_location()
+
+    elif action == "Random Event":
+        random_event()
+
+    elif action == "Fight Wild Animals" or action == "Fight Bandits":
+        combat_outcome()
+
+    elif action == "Approach the Merchant":
+        approach_merchant()
+
+# Function to simulate the Merchant encounter
+def approach_merchant():
+    story_label.config(text="You approach the merchant. He offers a rare item for 5 gold coins.")
+    action_buttons_frame.pack_forget()
+    merchant_frame = tk.Frame(root)
+    merchant_frame.pack()
+
+    buy_button = tk.Button(merchant_frame, text="Buy Item", command=lambda: buy_item(merchant_frame))
+    buy_button.pack()
+
+    leave_button = tk.Button(merchant_frame, text="Leave", command=lambda: leave_merchant(merchant_frame))
+    leave_button.pack()
+
+#Niloy Part Ends-----------------------------------------------------------
