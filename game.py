@@ -1,4 +1,3 @@
-#Shehan Starts-------------------------------------------------
 
 import tkinter as tk
 from tkinter import messagebox
@@ -132,10 +131,6 @@ def show_location_choices(location):
     # Pack the action_buttons_frame to show it
     action_buttons_frame.pack()
 
-#Shehan Part Ends---------------------------------------------------------------------------
-#push form here now
-
-#Niloy Part Starts--------------------------------------------------------------------------
 
 # Function to update the game state
 def update_game_state(action):
@@ -215,11 +210,6 @@ def quest_complete_end_game():
     messagebox.showinfo("Quest Complete", "You have completed the quest and found the hidden treasure!")
     root.quit()  # End the game after completion
 
-
-#Niloy Part Ends--------------------------------------------------------------------
-
-#Sadmaan Part Starts---------------------------------------------------------------------
-
 # Function to simulate the Merchant encounter
 def approach_merchant():
     story_label.config(text="You approach the merchant. He offers a rare item for 5 gold coins.")
@@ -232,8 +222,6 @@ def approach_merchant():
 
     leave_button = tk.Button(merchant_frame, text="Leave", command=lambda: leave_merchant(merchant_frame))
     leave_button.pack()
-
-
 
 # Function for handling the Buy Item action
 def buy_item(merchant_frame):
@@ -292,11 +280,6 @@ def handle_combat(decision, combat_frame):
         game_state["Reputation"] += 1
 
     update_labels()
-
-
-#Sadman Part Ends-----------------------------------------------------------------------
-
-#Tawhid Part Starts---------------------------------------------------------------------
 
 # Function to simulate a random event
 def random_event():
@@ -370,5 +353,3 @@ ahsan_manzil_button.pack()
 
 # Run the Tkinter main loop
 root.mainloop()
-
-#Tawhid Part Ends----------------------
